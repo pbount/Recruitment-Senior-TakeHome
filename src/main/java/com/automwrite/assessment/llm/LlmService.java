@@ -1,4 +1,4 @@
-package com.automwrite.assessment.service;
+package com.automwrite.assessment.llm;
 
 import java.util.concurrent.CompletableFuture;
 

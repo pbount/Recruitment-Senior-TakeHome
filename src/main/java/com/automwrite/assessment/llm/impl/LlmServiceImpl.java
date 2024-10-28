@@ -1,6 +1,6 @@
-package com.automwrite.assessment.service.impl;
+package com.automwrite.assessment.llm.impl;
 
-import com.automwrite.assessment.service.LlmService;
+import com.automwrite.assessment.llm.LlmService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

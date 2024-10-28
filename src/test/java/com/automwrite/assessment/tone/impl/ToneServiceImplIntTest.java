@@ -27,12 +27,12 @@ class ToneServiceImplIntTest {
 
     private static final String DIFFERENT_TONES_DIRECTORY = "different tones/";
 
-    private static final String CASUAL_TONE_DOCX_FILE_NAME = DIFFERENT_TONES_DIRECTORY + "automwrite - A - Casual tone.docx";
-    private static final String FORMAL_TONE_DOCX_FILE_NAME = DIFFERENT_TONES_DIRECTORY + "automwrite - B - Formal tone.docx";
-    private static final String GRANDILOQUENT_TONE_FILE_NAME = DIFFERENT_TONES_DIRECTORY + "automwrite - C - Grandiloquent tone.docx";
-    private static final File CASUAL_TONE_DOCX_FILE = new File(CASUAL_TONE_DOCX_FILE_NAME);
-    private static final File FORMAL_TONE_FILE = new File(FORMAL_TONE_DOCX_FILE_NAME);
-    private static final File GRANDILOQUENT_TONE_FILE = new File(GRANDILOQUENT_TONE_FILE_NAME);
+    private static final String CASUAL_TONE_DOCX_FILE_NAME = "automwrite - A - Casual tone.docx";
+    private static final String FORMAL_TONE_DOCX_FILE_NAME = "automwrite - B - Formal tone.docx";
+    private static final String GRANDILOQUENT_TONE_FILE_NAME = "automwrite - C - Grandiloquent tone.docx";
+    private static final File CASUAL_TONE_DOCX_FILE = new File(DIFFERENT_TONES_DIRECTORY + CASUAL_TONE_DOCX_FILE_NAME);
+    private static final File FORMAL_TONE_FILE = new File(DIFFERENT_TONES_DIRECTORY + FORMAL_TONE_DOCX_FILE_NAME);
+    private static final File GRANDILOQUENT_TONE_FILE = new File(DIFFERENT_TONES_DIRECTORY + GRANDILOQUENT_TONE_FILE_NAME);
     private static final String CASUAL_TONE = "casual";
     private static final String FORMAL_TONE = "formal";
     private static final String GRANDILOQUENT_TONE = "grandiloquent";
@@ -70,9 +70,9 @@ class ToneServiceImplIntTest {
                 parseDocx(targetFile));
         XWPFDocument transformedDocument = futureResult.join();
         String transformedText = new XWPFWordExtractor(transformedDocument).getText();
-        llmService.generateText(("Identify if the tone of the following text is %s, " +
+        String achievedToneMatchesTargetTone = llmService.generateText(("Identify if the tone of the following text is %s, " +
                                  "only respond with yes or no. Text: %s").formatted(targetTone(toneFile), transformedText));
-        assertThat(transformedText).isEqualTo("yes");
+        assertThat(achievedToneMatchesTargetTone).isEqualToIgnoringCase("yes");
     }
 
     private String targetTone(File toneFile) {

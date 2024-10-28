@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import com.automwrite.assessment.Application;
 import com.automwrite.assessment.llm.LlmService;
 import com.automwrite.assessment.tone.ToneService;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -65,12 +66,13 @@ class ToneServiceImplIntTest {
     @MethodSource("toneTransformationCombinations")
     void transformationSucceeds(File toneFile, File targetFile) throws IOException {
         assertThat(apiKey).isNotEmpty();
-        CompletableFuture<String> futureResult = toneService.transformTone(parseDocx(toneFile),
+        CompletableFuture<XWPFDocument> futureResult = toneService.transformTone(parseDocx(toneFile),
                 parseDocx(targetFile));
-        String result = futureResult.join();
+        XWPFDocument transformedDocument = futureResult.join();
+        String transformedText = new XWPFWordExtractor(transformedDocument).getText();
         llmService.generateText(("Identify if the tone of the following text is %s, " +
-                                 "only respond with yes or no. Text: %s").formatted(targetTone(toneFile), result));
-        assertThat(result).isEqualTo("yes");
+                                 "only respond with yes or no. Text: %s").formatted(targetTone(toneFile), transformedText));
+        assertThat(transformedText).isEqualTo("yes");
     }
 
     private String targetTone(File toneFile) {

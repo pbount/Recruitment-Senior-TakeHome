@@ -27,17 +27,27 @@ public class ToneServiceImpl implements ToneService {
     private static final String TRANSFORM_TONE_PROMPT = "Transform the tone of following text to %s. Respond only with " +
                                                         "the transformed text. The text to be transformed: %s";
 
-    private final LlmService llmService;
+    private final LlmService llmService;;
 
     @Override
-    public CompletableFuture<String> transformTone(XWPFDocument toneFile, XWPFDocument contentFile) {
+    public CompletableFuture<XWPFDocument> transformTone(XWPFDocument toneFile, XWPFDocument contentFile) {
         Objects.requireNonNull(toneFile, "toneFile must not be null");
         Objects.requireNonNull(contentFile, "contentFile must not be null");
 
         String toneFileText = getText(toneFile);
         String contentFileText = getText(contentFile);
 
-        return identifyToneOfText(toneFileText).thenCompose(transformToneOf(contentFileText));
+        return identifyToneOfText(toneFileText)
+                .thenCompose(transformToneOf(contentFileText))
+                .thenApply(convertToDocx());
+    }
+
+    private Function<String, XWPFDocument> convertToDocx() {
+        return text -> {
+            XWPFDocument document = new XWPFDocument();
+            document.createParagraph().createRun().setText(text);
+            return document;
+        };
     }
 
     private Function<String, CompletionStage<String>> transformToneOf(String text) {

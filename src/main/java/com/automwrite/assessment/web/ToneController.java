@@ -1,6 +1,8 @@
 package com.automwrite.assessment.web;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -32,7 +34,8 @@ public class ToneController {
      * @return A response indicating that the processing has completed
      */
     @PostMapping("/transform/tone")
-    public ResponseEntity<Map<String, String>> transformTone(@RequestParam MultipartFile toneFile, @RequestParam MultipartFile contentFile)
+    public ResponseEntity<Map<String, String>> transformTone(@RequestParam MultipartFile toneFile,
+                                                             @RequestParam MultipartFile contentFile)
             throws IOException {
         Objects.requireNonNull(toneFile, "Received toneFile must not be null");
         Objects.requireNonNull(contentFile, "Received contentFile must not be null");
@@ -46,14 +49,21 @@ public class ToneController {
                 contentDocumentTitle);
 
         return toneService.transformTone(toneDocument, contentDocument)
-                .thenApply(logSuccessAndReturnText(toneDocumentTitle, contentDocumentTitle))
+                .thenApply(saveFile())
+                .thenApply(logAndReturnSuccess(toneDocumentTitle, contentDocumentTitle))
                 .exceptionally(logFailureAndReturnError(toneDocumentTitle, contentDocumentTitle))
                 .join();
     }
 
-    private Function<Throwable, ResponseEntity<Map<String, String>>> logFailureAndReturnError(String toneDocumentTitle, String contentDocumentTitle) {
+    private Function<XWPFDocument, XWPFDocument> saveFile() {
+        return xwpfDocument -> saveDocument(xwpfDocument, "different tones/transformed tone.docx");
+    }
+
+    private Function<Throwable, ResponseEntity<Map<String, String>>> logFailureAndReturnError(String toneDocumentTitle,
+                                                                                              String contentDocumentTitle) {
         return ex -> {
-            String errorMessage = "Failed to transform toneFile '%s' and contentFile '%s'".formatted(toneDocumentTitle, contentDocumentTitle);
+            String errorMessage = "Failed to transform toneFile '%s' and contentFile '%s'".formatted(toneDocumentTitle,
+                    contentDocumentTitle);
             log.error(errorMessage);
             // TODO return different errors and messages based on exception
             return ResponseEntity.internalServerError().body(Map.of(
@@ -63,15 +73,24 @@ public class ToneController {
         };
     }
 
-    private Function<String, ResponseEntity<Map<String, String>>> logSuccessAndReturnText(String toneDocumentTitle, String contentDocumentTitle) {
-        return transformedText -> {
+    private Function<XWPFDocument, ResponseEntity<Map<String, String>>> logAndReturnSuccess(String toneDocumentTitle,
+                                                                                            String contentDocumentTitle) {
+        return transformedDocument -> {
             log.info("Successfully transformed toneFile '{}' and contentFile '{}' for tone transformation", toneDocumentTitle,
                     contentDocumentTitle);
             return ResponseEntity.ok(Map.of(
-                    "message", "Files successfully uploaded, processing completed",
-                    "transformedContent", transformedText
+                    "message", "Files successfully uploaded, processing completed"
             ));
         };
+    }
+
+    public static XWPFDocument saveDocument(XWPFDocument document, String filePath) {
+        try (var outputStream = Files.newOutputStream(Paths.get(filePath))) {
+            document.write(outputStream);
+            return document;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String titleOf(XWPFDocument toneDocument) {

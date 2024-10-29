@@ -1,16 +1,19 @@
 package com.automwrite.assessment.tone.impl;
 
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
+import com.automwrite.assessment.document.DocumentTransformer;
 import com.automwrite.assessment.llm.LlmService;
 import com.automwrite.assessment.tone.ToneService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,9 +27,6 @@ public class ToneServiceImpl implements ToneService {
     private static final String PROMPT_HACK = "Identify the tone of the following text, choose one from Casual, Formal " +
                                               "and Grandiloquent, only respond with the tone. Text: %s";
 
-    private static final String TRANSFORM_TONE_PROMPT = "Transform the tone of following text to %s. Respond only with " +
-                                                        "the transformed text. The text to be transformed: %s";
-
     private final LlmService llmService;;
 
     @Override
@@ -35,26 +35,18 @@ public class ToneServiceImpl implements ToneService {
         Objects.requireNonNull(contentFile, "contentFile must not be null");
 
         String toneFileText = getText(toneFile);
-        String contentFileText = getText(contentFile);
 
         return identifyToneOfText(toneFileText)
-                .thenCompose(transformToneOf(contentFileText))
-                .thenApply(convertToDocx());
+                .thenCompose(transformToneOf(contentFile));
     }
 
-    private Function<String, XWPFDocument> convertToDocx() {
-        return text -> {
-            XWPFDocument document = new XWPFDocument();
-            document.createParagraph().createRun().setText(text);
-            return document;
-        };
-    }
-
-    private Function<String, CompletionStage<String>> transformToneOf(String text) {
+    private Function<String, CompletionStage<XWPFDocument>> transformToneOf(XWPFDocument document) {
         return tone -> {
             log.info("Identified target tone of transformation is '{}'.", tone);
-            log.debug("Transforming tone of text:\n{}", text);
-            return llmService.generateTextAsync(TRANSFORM_TONE_PROMPT.formatted(tone, text));
+            log.debug("Transforming tone of text:\n{}", getText(document));
+
+            return DocumentTransformer.of(document, tone)
+                    .transform(llmService::generateTextAsync);
         };
     }
 

@@ -49,16 +49,15 @@ class ToneServiceImplIntTest {
 
     static Stream<Arguments> toneTransformationCombinations() {
         return Stream.of(
-                Arguments.of(CASUAL_TONE_DOCX_FILE, FORMAL_TONE_FILE)
-                // Disabled these tests not to overload the LLM API.
-                /*Arguments.of(CASUAL_TONE_DOCX_FILE, CASUAL_TONE_DOCX_FILE),
+                Arguments.of(CASUAL_TONE_DOCX_FILE, FORMAL_TONE_FILE),
+                Arguments.of(CASUAL_TONE_DOCX_FILE, CASUAL_TONE_DOCX_FILE),
                 Arguments.of(CASUAL_TONE_DOCX_FILE, GRANDILOQUENT_TONE_FILE),
                 Arguments.of(FORMAL_TONE_FILE, FORMAL_TONE_FILE),
                 Arguments.of(FORMAL_TONE_FILE, GRANDILOQUENT_TONE_FILE),
                 Arguments.of(FORMAL_TONE_FILE, CASUAL_TONE_DOCX_FILE),
                 Arguments.of(GRANDILOQUENT_TONE_FILE, GRANDILOQUENT_TONE_FILE),
                 Arguments.of(GRANDILOQUENT_TONE_FILE, CASUAL_TONE_DOCX_FILE),
-                Arguments.of(GRANDILOQUENT_TONE_FILE, FORMAL_TONE_FILE)*/
+                Arguments.of(GRANDILOQUENT_TONE_FILE, FORMAL_TONE_FILE)
         );
     }
 

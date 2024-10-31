@@ -1,6 +1,6 @@
 package com.automwrite.assessment.service.storage;
 
-import java.util.*;
+import java.util.List;
 
 public interface FileStorageService<T> {
 

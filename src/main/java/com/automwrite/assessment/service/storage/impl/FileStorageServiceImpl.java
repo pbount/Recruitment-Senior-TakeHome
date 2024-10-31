@@ -1,12 +1,17 @@
 package com.automwrite.assessment.service.storage.impl;
 
-import com.automwrite.assessment.service.storage.*;
+import com.automwrite.assessment.service.storage.FileStorageService;
+import com.automwrite.assessment.service.storage.FileCategory;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 

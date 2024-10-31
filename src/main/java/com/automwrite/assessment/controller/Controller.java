@@ -29,10 +29,6 @@ public class Controller {
      * You should extract the tone from the `toneFile` and update the `contentFile` to convey the same content
      * but using the extracted tone.
      *
-     * TODO: Better useage of fileStorageService. Currently we overwrite everything. If the input and output file exists
-     *       and the contents of the provided input file are the same with the existing input file, the output file has
-     *       already been processed.
-     *
      * @param toneFile File to extract the tone from
      * @param contentFile File to apply the tone to
      * @return A response indicating that the processing has completed

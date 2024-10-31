@@ -66,9 +66,6 @@ public class DocxToneManagementService implements ToneManagementService<XWPFDocu
      * a textual representation of the document's stylistic tone. The resulting text is parsed to create
      * a {@link StylisticTone} object, which represents the extracted tone.
      *
-     * TODO: All text of the document is being used. We need to ensure that the number of characters does not exceed
-     *       the api limit.
-     *
      * @param file the Word document from which to extract the tone
      * @return a {@link StylisticTone} representing the extracted tone of the document
      * @throws Exception if an error occurs during processing
@@ -96,11 +93,6 @@ public class DocxToneManagementService implements ToneManagementService<XWPFDocu
      * it rewrites the content to match the specified {@link StylisticTone}, using a context window of
      * surrounding paragraphs for better coherence. After all paragraphs have been processed, it replaces
      * the text in the cloned document with the tone-adjusted content and returns the modified document.
-     *
-     * TODO: The function should be able to handle large documents exceeding the limits of the LLM api
-     *       however a better balance between the context window and the transformed text is needed.
-     *       A future improvement would be to include more paragraphs to be transformed in the same prompt
-     *       in order to reduce api calls.
      *
      * @param file the Word document to which the tone will be applied
      * @param tone the {@link StylisticTone} to apply to the document

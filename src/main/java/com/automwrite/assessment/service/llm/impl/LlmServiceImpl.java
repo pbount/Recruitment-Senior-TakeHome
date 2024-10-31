@@ -1,6 +1,6 @@
-package com.automwrite.assessment.service.impl;
+package com.automwrite.assessment.service.llm.impl;
 
-import com.automwrite.assessment.service.LlmService;
+import com.automwrite.assessment.service.llm.LlmService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +27,8 @@ public class LlmServiceImpl implements LlmService {
     public LlmServiceImpl(
         RestTemplate restTemplate,
         ObjectMapper objectMapper,
-        @Value("${anthropic.api.key}") String apiKey) {
+        @Value("${anthropic.api.key}") String apiKey
+    ) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
         this.apiKey = apiKey;
